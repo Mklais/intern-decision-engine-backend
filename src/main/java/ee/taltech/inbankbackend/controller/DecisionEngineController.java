@@ -1,10 +1,12 @@
-package ee.taltech.inbankbackend.endpoint;
+package ee.taltech.inbankbackend.controller;
 
+import ee.taltech.inbankbackend.endpoint.DecisionRequest;
+import ee.taltech.inbankbackend.endpoint.DecisionResponse;
 import ee.taltech.inbankbackend.exceptions.InvalidLoanAmountException;
 import ee.taltech.inbankbackend.exceptions.InvalidLoanPeriodException;
 import ee.taltech.inbankbackend.exceptions.InvalidPersonalCodeException;
 import ee.taltech.inbankbackend.exceptions.NoValidLoanException;
-import ee.taltech.inbankbackend.service.Decision;
+import ee.taltech.inbankbackend.model.Decision;
 import ee.taltech.inbankbackend.service.DecisionEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class DecisionEngineController {
 
     private final DecisionEngine decisionEngine;
-    private final DecisionResponse response;
-
     @Autowired
-    DecisionEngineController(DecisionEngine decisionEngine, DecisionResponse response) {
+    DecisionEngineController(DecisionEngine decisionEngine) {
         this.decisionEngine = decisionEngine;
-        this.response = response;
     }
 
     /**
@@ -44,31 +43,28 @@ public class DecisionEngineController {
      */
     @PostMapping("/decision")
     public ResponseEntity<DecisionResponse> requestDecision(@RequestBody DecisionRequest request) {
+        DecisionResponse response = new DecisionResponse();
         try {
-            Decision decision = decisionEngine.
-                    calculateApprovedLoan(request.getPersonalCode(), request.getLoanAmount(), request.getLoanPeriod());
-            response.setLoanAmount(decision.getLoanAmount());
-            response.setLoanPeriod(decision.getLoanPeriod());
-            response.setErrorMessage(decision.getErrorMessage());
+            Decision decision = decisionEngine
+                    .calculateApprovedLoan(
+                            request.getPersonalCode(),
+                            request.getLoanAmount(),
+                            request.getLoanPeriod()
+                    );
+            response.setLoanAmount(decision.loanAmount());
+            response.setLoanPeriod(decision.loanPeriod());
+            response.setErrorMessage(decision.errorMessage());
 
             return ResponseEntity.ok(response);
-        } catch (InvalidPersonalCodeException | InvalidLoanAmountException | InvalidLoanPeriodException e) {
-            response.setLoanAmount(null);
-            response.setLoanPeriod(null);
-            response.setErrorMessage(e.getMessage());
 
+        } catch (InvalidPersonalCodeException | InvalidLoanAmountException | InvalidLoanPeriodException e) {
+            response.setErrorMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
         } catch (NoValidLoanException e) {
-            response.setLoanAmount(null);
-            response.setLoanPeriod(null);
             response.setErrorMessage(e.getMessage());
-
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            response.setLoanAmount(null);
-            response.setLoanPeriod(null);
             response.setErrorMessage("An unexpected error occurred");
-
             return ResponseEntity.internalServerError().body(response);
         }
     }

@@ -5,7 +5,7 @@ import ee.taltech.inbankbackend.exceptions.InvalidLoanAmountException;
 import ee.taltech.inbankbackend.exceptions.InvalidLoanPeriodException;
 import ee.taltech.inbankbackend.exceptions.InvalidPersonalCodeException;
 import ee.taltech.inbankbackend.exceptions.NoValidLoanException;
-import ee.taltech.inbankbackend.service.Decision;
+import ee.taltech.inbankbackend.model.Decision;
 import ee.taltech.inbankbackend.service.DecisionEngine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ public class DecisionEngineControllerTest {
 
         DecisionRequest request = new DecisionRequest("1234", 10L, 10);
 
-        MvcResult result = mockMvc.perform(post("/loan/decision")
+        MvcResult result = (mockMvc.perform(post("/loan/decision")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -69,7 +69,8 @@ public class DecisionEngineControllerTest {
                 .andExpect(jsonPath("$.loanAmount").value(1000))
                 .andExpect(jsonPath("$.loanPeriod").value(12))
                 .andExpect(jsonPath("$.errorMessage").isEmpty())
-                .andReturn();
+                .andReturn()
+        );
 
         DecisionResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), DecisionResponse.class);
         assert response.getLoanAmount() == 1000;
@@ -90,7 +91,7 @@ public class DecisionEngineControllerTest {
 
         DecisionRequest request = new DecisionRequest("1234", 10L, 10);
 
-        MvcResult result = mockMvc.perform(post("/loan/decision")
+        MvcResult result = (mockMvc.perform(post("/loan/decision")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -98,7 +99,8 @@ public class DecisionEngineControllerTest {
                 .andExpect(jsonPath("$.loanAmount").isEmpty())
                 .andExpect(jsonPath("$.loanPeriod").isEmpty())
                 .andExpect(jsonPath("$.errorMessage").value("Invalid personal code"))
-                .andReturn();
+                .andReturn()
+        );
 
         DecisionResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), DecisionResponse.class);
         assert response.getLoanAmount() == null;
@@ -119,7 +121,7 @@ public class DecisionEngineControllerTest {
 
         DecisionRequest request = new DecisionRequest("1234", 10L, 10);
 
-        MvcResult result = mockMvc.perform(post("/loan/decision")
+        MvcResult result = (mockMvc.perform(post("/loan/decision")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -127,7 +129,8 @@ public class DecisionEngineControllerTest {
                 .andExpect(jsonPath("$.loanAmount").isEmpty())
                 .andExpect(jsonPath("$.loanPeriod").isEmpty())
                 .andExpect(jsonPath("$.errorMessage").value("Invalid loan amount"))
-                .andReturn();
+                .andReturn()
+        );
 
         DecisionResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), DecisionResponse.class);
         assert response.getLoanAmount() == null;
@@ -148,7 +151,7 @@ public class DecisionEngineControllerTest {
 
         DecisionRequest request = new DecisionRequest("1234", 10L, 10);
 
-        MvcResult result = mockMvc.perform(post("/loan/decision")
+        MvcResult result = (mockMvc.perform(post("/loan/decision")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -156,7 +159,8 @@ public class DecisionEngineControllerTest {
                 .andExpect(jsonPath("$.loanAmount").isEmpty())
                 .andExpect(jsonPath("$.loanPeriod").isEmpty())
                 .andExpect(jsonPath("$.errorMessage").value("Invalid loan period"))
-                .andReturn();
+                .andReturn()
+        );
 
         DecisionResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), DecisionResponse.class);
         assert response.getLoanAmount() == null;
@@ -177,7 +181,7 @@ public class DecisionEngineControllerTest {
 
         DecisionRequest request = new DecisionRequest("1234", 1000L, 12);
 
-        MvcResult result = mockMvc.perform(post("/loan/decision")
+        MvcResult result = (mockMvc.perform(post("/loan/decision")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -185,7 +189,8 @@ public class DecisionEngineControllerTest {
                 .andExpect(jsonPath("$.loanAmount").isEmpty())
                 .andExpect(jsonPath("$.loanPeriod").isEmpty())
                 .andExpect(jsonPath("$.errorMessage").value("No valid loan available"))
-                .andReturn();
+                .andReturn()
+        );
 
         DecisionResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), DecisionResponse.class);
         assert response.getLoanAmount() == null;
@@ -205,7 +210,7 @@ public class DecisionEngineControllerTest {
 
         DecisionRequest request = new DecisionRequest("1234", 10L, 10);
 
-        MvcResult result = mockMvc.perform(post("/loan/decision")
+        MvcResult result = (mockMvc.perform(post("/loan/decision")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
@@ -213,7 +218,8 @@ public class DecisionEngineControllerTest {
                 .andExpect(jsonPath("$.loanAmount").isEmpty())
                 .andExpect(jsonPath("$.loanPeriod").isEmpty())
                 .andExpect(jsonPath("$.errorMessage").value("An unexpected error occurred"))
-                .andReturn();
+                .andReturn()
+        );
 
         DecisionResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), DecisionResponse.class);
         assert response.getLoanAmount() == null;
