@@ -32,9 +32,7 @@ They are compared to constants to check if they meet the application requirement
 - **Refactor Validation Logic**: Extracting validation logic into dedicated classes or methods would enhance readability and maintainability, adhering to the Single Responsibility Principle.
 - **Decision Engine**: Inside the engine, there is a method ``highestValidLoanAmount`` which calculates the highest valid loan amount correctly with creditModifier and loanPeriod as inputs.
   But there is a potential for an infinite loop in adjusting the loan period.
-<br>
 `while (highestValidLoanAmount(loanPeriod) < DecisionEngineConstants.MINIMUM_LOAN_AMOUNT) { loanPeriod++; }`
-<br>
 The loop does not have a clear fixed upper limit and will keep running because it has no condition to exit if the `loanPeriod` exceeds the maximum allowable period or
 if no valid loan configuration is possible.
 If the loan period required to meet the minimum loan amount exceeds the maximum loan period, the loop doesn't stop,
