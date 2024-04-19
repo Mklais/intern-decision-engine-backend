@@ -70,6 +70,7 @@ public class DecisionEngine {
      * @throws InvalidPersonalCodeException If the provided personal ID code is invalid
      * @throws InvalidLoanAmountException   If the requested loan amount is invalid
      * @throws InvalidLoanPeriodException   If the requested loan period is invalid
+     * @throws NoValidLoanException   If the loan is not valid
      */
     private void verifyInputs(String personalCode, Long loanAmount, int loanPeriod)
             throws InvalidPersonalCodeException, InvalidLoanAmountException, InvalidLoanPeriodException, NoValidLoanException {
